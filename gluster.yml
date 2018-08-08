@@ -3,38 +3,39 @@
   vars_files:
     - vault.yml 
   tasks:
-#   - name: Register as user credentials into given environment (against Red Hat Satellite 6.x), and auto-subscribe.
-#      redhat_subscription:
-#        state: present
-#        username: "{{username}}"
-#        password: "{{password}}"
-#        auto_attach: true
-#        pool_ids: 8a85f9815bb07800015bb08404d71143
-#
-#    - name: Disable all RHSM repositories
-#      rhsm_repository:
-#        name: '*'
-#        state: disabled    
-#
-#    - name: Enable a RHSM repository
-#      rhsm_repository:
-#        name: rhel-7-server-rpms
-#        state: enabled    
-#
-#    - name: Enable Gluster repository
-#      rhsm_repository:
-#        name: rh-gluster-3-for-rhel-7-server-rpms
-#        state: enabled    
-#
-#    - name: Update all yum packages
-#      yum:
-#        name: "*"
-#        state: latest
+   - name: Register as user credentials into given environment (against Red Hat Satellite 6.x), and auto-subscribe.
+      redhat_subscription:
+        state: present
+        username: "{{username}}"
+        password: "{{password}}"
+        auto_attach: true
+        pool_ids: 8a85f9815bb07800015bb08404d71143
 
-#    - name: Install RHGS packages
-#      yum:
-#        name: "redhat-storage-server"
-#        state: latest
+    - name: Disable all RHSM repositories
+      rhsm_repository:
+        name: '*'
+        state: disabled    
+
+    - name: Enable a RHSM repository
+      rhsm_repository:
+        name: rhel-7-server-rpms
+        state: enabled    
+
+    - name: Enable Gluster repository
+      rhsm_repository:
+        name: rh-gluster-3-for-rhel-7-server-rpms
+        state: enabled    
+
+    - name: Update all yum packages
+      yum:
+        name: "*"
+        state: latest
+
+    - name: Install RHGS packages
+      yum:
+        name: "redhat-storage-server"
+        state: latest
+
      - name: Restart service firewalld, in all cases
        service:
          name: firewalld
@@ -44,7 +45,6 @@
        service:
          name: firewalld
          enabled: yes
-
 
      - name: Restart service glusterd, in all cases
        service:
@@ -61,7 +61,6 @@
          service: glusterfs
          permanent: true
          state: enabled
-
 
      - name: Add 5667 port to firewall
        firewalld: 
