@@ -1,3 +1,0 @@
----
-- import_playbook: gluster.yml
-- import_playbook: create_volume.yml
