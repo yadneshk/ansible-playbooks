@@ -1,3 +1,13 @@
 [dev]
-#ansible2
-ansible3
+glus1
+glus2
+glus3
+
+
+[gluster_master]
+glus1
+
+
+[gluster_nodes]
+glus2
+glus3
