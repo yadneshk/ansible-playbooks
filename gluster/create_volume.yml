@@ -1,0 +1,75 @@
+--- 
+- hosts: gluster_nodes
+  tasks:
+    - name: Create vg
+      lvg:
+        pvs: /dev/sdb
+        vg: myvg1
+  
+    - name: Create a thin pool of 5G
+      lvol:
+        vg: myvg1
+        thinpool: testpool
+        size: 5g
+
+    - name: Create a thin volume of 500M
+      lvol:
+        vg: myvg1
+        lv: mylv1
+        thinpool: testpool
+        size: 500m
+
+    - name: Format to xfs
+      filesystem:
+        fstype: xfs    
+        dev: /dev/myvg1/mylv1
+
+    - name: Mount brick
+      mount:
+        path: /mnt/brick1
+        src: /dev/myvg1/mylv1
+        fstype: xfs     
+        state: mounted
+        backup: no
+        boot: yes
+
+    - name: Create dir inside mount point
+      file:
+        path: /mnt/brick1/brick
+        state: directory
+        mode: 0775
+
+- hosts: gluster_master
+  tasks: 
+    - name: Create a trusted storage pool
+      gluster_peer:
+        state: present
+        nodes:
+          - glus2
+          - glus3
+
+    - name: create gluster volume with multiple bricks  # To get replicated volume, mention number of replicas or by default distributed volume is created
+      gluster_volume:
+        state: present
+        name: gluster_volume
+        bricks: /mnt/brick1/brick
+        cluster:
+          - glus2
+          - glus3
+      run_once: true
+
+    - name: start gluster_volume
+      gluster_volume:
+        name: gluster_volume
+        state: started
+
+    - name: Mount the gluster volume
+      mount:
+        path: "/mnt/gluster_volume"
+        src: glus1:/gluster_volume
+        fstype: glusterfs
+        opts: _netdev
+        state: mounted
+        backup: no
+        boot: yes
+        
