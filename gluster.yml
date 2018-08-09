@@ -3,7 +3,7 @@
   vars_files:
     - vault.yml 
   tasks:
-   - name: Register as user credentials into given environment (against Red Hat Satellite 6.x), and auto-subscribe.
+    - name: Register as user credentials into given environment (against Red Hat Satellite 6.x), and auto-subscribe.
       redhat_subscription:
         state: present
         username: "{{username}}"
@@ -31,44 +31,66 @@
         name: "*"
         state: latest
 
+    - name: Reboot hosts
+      shell: "sleep 5  && reboot"
+      async: 1
+      poll: 0
+
+    - name: wait for hosts 
+      wait_for_connection:
+        connect_timeout: 10
+        delay: 5
+        timeout: 300
+
     - name: Install RHGS packages
       yum:
         name: "redhat-storage-server"
         state: latest
 
-     - name: Restart service firewalld, in all cases
-       service:
-         name: firewalld
-         state: restarted
+    - name: Reboot hosts
+      shell: "sleep 5  && reboot"
+      async: 1
+      poll: 0
 
-     - name: Enable service firewalld, and not touch the running state
-       service:
-         name: firewalld
-         enabled: yes
+    - name: wait for hosts 
+      wait_for_connection:
+        connect_timeout: 10
+        delay: 5
+        timeout: 300
 
-     - name: Restart service glusterd, in all cases
-       service:
-         name: glusterd
-         state: restarted
+    - name: Restart service firewalld, in all cases
+      service:
+        name: firewalld
+        state: restarted
 
-     - name: Enable service firewalld, and not touch the running state
-       service:
-         name: glusterd
-         enabled: yes
+    - name: Enable service firewalld, and not touch the running state
+      service:
+        name: firewalld
+        enabled: yes
 
-     - name: Add glusterfs service to firewall
-       firewalld:
-         service: glusterfs
-         permanent: true
-         state: enabled
+    - name: Restart service glusterd, in all cases
+      service:
+        name: glusterd
+        state: restarted
 
-     - name: Add 5667 port to firewall
-       firewalld: 
-         port: 5667/tcp
-         permanent: true
-         state: enabled
+    - name: Enable service firewalld, and not touch the running state
+      service:
+        name: glusterd
+        enabled: yes
 
-     - name: Reload firewall
-       command: "firewall-cmd --reload"
+    - name: Add glusterfs service to firewall
+      firewalld:
+        service: glusterfs
+        permanent: true
+        state: enabled
+
+    - name: Add 5667 port to firewall
+      firewalld: 
+        port: 5667/tcp
+        permanent: true
+        state: enabled
+
+    - name: Reload firewall
+      command: "firewall-cmd --reload"
 
 
