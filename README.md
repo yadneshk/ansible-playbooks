@@ -15,3 +15,9 @@ Every application directory contains a playbook <application_name>.yml. If you h
     - ~/.ansible.cfg (in the home directory)
     - /etc/ansible/ansible.cfg
 
+- inventory file
+  - This files contains list of all host that are to be managed
+  - All these host should be reachable either playbook will fail
+  - You can create different groups of host
+ 
+ 
